@@ -18,6 +18,7 @@ def get_matches_to_populate():
 
 def enrich_user_matches(match_id, match_data, rosters, player_dict):
     user_matches = []
+    extra_player_matches = []
     for roster_id, roster in rosters.items():
         for player_id in roster['players']:
             player_json = player_dict[player_id]
@@ -29,7 +30,18 @@ def enrich_user_matches(match_id, match_data, rosters, player_dict):
                 player_json=player_json
             )
             user_matches.append(user_match)
-    return user_matches
+        for extra_player_id in roster['extra_players']:
+            player_json = player_dict[extra_player_id]
+            extra_player_match = _create_extra_player_match(
+                match_id=match_id,
+                match_data=match_data,
+                roster_id=roster_id,
+                roster_info=roster,
+                player_json=player_json
+            )
+            extra_player_matches.append(extra_player_match)
+
+    return user_matches, extra_player_matches
 
 
 def _enrich_user_match(match_id, match_data, roster_id, roster_info, player_json):
@@ -42,9 +54,21 @@ def _enrich_user_match(match_id, match_data, roster_id, roster_info, player_json
     _update_match_with_roster_info(user_match, roster_id, roster_info)
     _update_match_with_player_data(user_match, player_json)
     user_match.status = UserMatch.POPULATED
-    print(user_match.time_survived)
     user_match.save()
     return user_match
+
+
+def _create_extra_player_match(match_id, match_data, roster_id, roster_info, player_json):
+    player_name = player_json['name']
+    extra_player_match = ExtraPlayerMatch.objects.create(
+        pubg_match_id=match_id,
+        player_name=player_name
+    )
+    _update_match_with_match_data(extra_player_match, match_data)
+    _update_match_with_roster_info(extra_player_match, roster_id, roster_info)
+    _update_match_with_player_data(extra_player_match, player_json)
+    extra_player_match.save()
+    return extra_player_match
 
 
 def _update_match_with_player_data(user_match, player_json):
