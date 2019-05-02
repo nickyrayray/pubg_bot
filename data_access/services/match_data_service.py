@@ -22,6 +22,7 @@ def enrich_user_matches(match_id, match_data, rosters, player_dict):
     for roster_id, roster in rosters.items():
         for player_id in roster['players']:
             player_json = player_dict[player_id]
+            print(player_json)
             user_match = _enrich_user_match(
                 match_id=match_id,
                 match_data=match_data,
@@ -32,6 +33,7 @@ def enrich_user_matches(match_id, match_data, rosters, player_dict):
             user_matches.append(user_match)
         for extra_player_id in roster['extra_players']:
             player_json = player_dict[extra_player_id]
+            print(player_json)
             extra_player_match = _create_extra_player_match(
                 match_id=match_id,
                 match_data=match_data,

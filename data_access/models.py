@@ -76,4 +76,4 @@ class ExtraPlayerMatch(Match):
             models.Index(fields=['pubg_match_id'], name='pubg_match_id_idx_ep'),
         ]
 
-    player_name = models.CharField(max_length=10)
+    player_name = models.CharField(max_length=64)

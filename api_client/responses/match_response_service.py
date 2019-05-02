@@ -29,7 +29,7 @@ def _find_extra_players_json_from_rosters(match_json, rosters):
     )
     if not extra_players:
         return {}
-    return {p['id']: p for p in match_json['included']
+    return {p['id']: p['attributes']['stats'] for p in match_json['included']
             if p['type'] == 'participant' and
             p['id'] in extra_players}
 
