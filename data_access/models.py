@@ -73,7 +73,7 @@ class ExtraPlayerMatch(Match):
         db_table = 'extra_player_pubg_matches'
         unique_together = (('player_name', 'pubg_match_id'),)
         indexes = [
-            models.Index(fields=['pubg_match_id'], name='pubg_match_id_idx'),
+            models.Index(fields=['pubg_match_id'], name='pubg_match_id_idx_ep'),
         ]
 
     player_name = models.CharField(max_length=10)
