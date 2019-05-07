@@ -1,6 +1,6 @@
 import requests
 import json
-from api_client.constants import *
+from pubg_api_client.constants import *
 
 
 class PubgClient(object):

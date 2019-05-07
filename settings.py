@@ -1,4 +1,4 @@
-INSTALLED_APPS = ('data_access',)
+INSTALLED_APPS = ('game_data',)
 
 SECRET_KEY = '12345'
 

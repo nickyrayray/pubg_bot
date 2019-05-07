@@ -1,10 +1,10 @@
 from decimal import Decimal
-from data_access.models import UserMatch, ExtraPlayerMatch
+from game_data.models import UserStats, ExtraPlayerStats, Match
 
 
 def get_matches_to_populate():
-    user_matches = UserMatch.objects.filter(
-        status=UserMatch.CREATED
+    user_matches = UserStats.objects.filter(
+        status=UserStats.CREATED
     ).select_related('pubg_player')
     match_dict = {}
     for user_match in user_matches:
@@ -16,16 +16,22 @@ def get_matches_to_populate():
     return match_dict
 
 
+def get_matches_to_post():
+    user_matches = UserStats.objects.filter(
+        status=UserStats.POPULATED
+    ).select_related('pubg_player')
+    return user_matches
+
+
 def enrich_user_matches(match_id, match_data, rosters, player_dict):
     user_matches = []
     extra_player_matches = []
+    populate_match_with_match_data(match_id, match_data)
     for roster_id, roster in rosters.items():
         for player_id in roster['players']:
             player_json = player_dict[player_id]
-            print(player_json)
             user_match = _enrich_user_match(
                 match_id=match_id,
-                match_data=match_data,
                 roster_id=roster_id,
                 roster_info=roster,
                 player_json=player_json
@@ -33,10 +39,8 @@ def enrich_user_matches(match_id, match_data, rosters, player_dict):
             user_matches.append(user_match)
         for extra_player_id in roster['extra_players']:
             player_json = player_dict[extra_player_id]
-            print(player_json)
             extra_player_match = _create_extra_player_match(
                 match_id=match_id,
-                match_data=match_data,
                 roster_id=roster_id,
                 roster_info=roster,
                 player_json=player_json
@@ -46,27 +50,25 @@ def enrich_user_matches(match_id, match_data, rosters, player_dict):
     return user_matches, extra_player_matches
 
 
-def _enrich_user_match(match_id, match_data, roster_id, roster_info, player_json):
+def _enrich_user_match(match_id, roster_id, roster_info, player_json):
     player_id = player_json['playerId']
-    user_match = UserMatch.objects.get(
+    user_match = UserStats.objects.get(
         pubg_match_id=match_id,
         pubg_player_id=player_id
     )
-    _update_match_with_match_data(user_match, match_data)
     _update_match_with_roster_info(user_match, roster_id, roster_info)
     _update_match_with_player_data(user_match, player_json)
-    user_match.status = UserMatch.POPULATED
+    user_match.status = UserStats.POPULATED
     user_match.save()
     return user_match
 
 
-def _create_extra_player_match(match_id, match_data, roster_id, roster_info, player_json):
+def _create_extra_player_match(match_id, roster_id, roster_info, player_json):
     player_name = player_json['name']
-    extra_player_match = ExtraPlayerMatch.objects.create(
+    extra_player_match = ExtraPlayerStats.objects.create(
         pubg_match_id=match_id,
         player_name=player_name
     )
-    _update_match_with_match_data(extra_player_match, match_data)
     _update_match_with_roster_info(extra_player_match, roster_id, roster_info)
     _update_match_with_player_data(extra_player_match, player_json)
     extra_player_match.save()
@@ -96,9 +98,13 @@ def _update_match_with_roster_info(user_match, roster_id, roster_info):
     user_match.won = roster_info['won']
 
 
-def _update_match_with_match_data(user_match, match_data):
-    user_match.pubg_server_timestamp = match_data['created_at']
-    user_match.game_mode = match_data['game_mode']
-    user_match.duration = match_data['duration']
-    user_match.map_name = match_data['map_name']
+def populate_match_with_match_data(match_id, match_data):
+    Match.objects.filter(
+        pubg_match_id=match_id
+    ).update(
+        pubg_server_timestamp=match_data['created_at'],
+        game_mode=match_data['game_mode'],
+        duration=match_data['duration'],
+        map_name=match_data['map_name'],
+    )
 

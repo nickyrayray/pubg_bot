@@ -1,6 +1,6 @@
 from flask import Flask, request
-from api_client.pubg_client import PubgClient
-from data_access.services import player_data_service, match_data_service
+from pubg_api_client.pubg_client import PubgClient
+from game_data.services import player_data_service, match_data_service
 
 
 app = Flask(__name__)

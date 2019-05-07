@@ -19,10 +19,19 @@ class User(models.Model):
 
 class Match(models.Model):
 
+    pubg_match_id = models.CharField(max_length=36, primary_key=True)
+    map_name = models.CharField(max_length=36, null=True)
+    duration = models.IntegerField(null=True)
+    pubg_server_timestamp = models.DateTimeField(null=True)
+    game_mode = models.CharField(max_length=10, null=True)
+
+
+class PlayerStats(models.Model):
+
     class Meta:
         abstract = True
 
-    pubg_match_id = models.CharField(max_length=36)
+    pubg_match = models.ForeignKey(Match)
     knock_downs = models.IntegerField(null=True)
     assists = models.IntegerField(null=True)
     boosts = models.IntegerField(null=True)
@@ -38,15 +47,11 @@ class Match(models.Model):
     weapons_acquired = models.IntegerField(null=True)
     win_place = models.IntegerField(null=True)
     roster_id = models.CharField(max_length=36, null=True)
-    map_name = models.CharField(max_length=36, null=True)
-    duration = models.IntegerField(null=True)
-    pubg_server_timestamp = models.DateTimeField(null=True)
-    game_mode = models.CharField(max_length=10, null=True)
     team_rank = models.IntegerField(null=True)
     won = models.NullBooleanField(null=True)
 
 
-class UserMatch(Match):
+class UserStats(PlayerStats):
 
     CREATED = 'created'
     POPULATED = 'populated'
@@ -54,26 +59,23 @@ class UserMatch(Match):
 
     class Meta:
         db_table = 'user_pubg_matches'
-        unique_together = (('pubg_player', 'pubg_match_id'),)
+        unique_together = (('pubg_player', 'pubg_match'),)
         indexes = [
-            models.Index(fields=['pubg_match_id'], name='pubg_match_id_idx'),
+            models.Index(fields=['pubg_match'], name='pubg_match_idx'),
             models.Index(fields=['status'], name='status_idx')
-        ]
-        index_together = [
-            ["pubg_server_timestamp", "status"],
         ]
 
     pubg_player = models.ForeignKey(User)
     status = models.CharField(max_length=10, default=CREATED)
 
 
-class ExtraPlayerMatch(Match):
+class ExtraPlayerStats(PlayerStats):
 
     class Meta:
         db_table = 'extra_player_pubg_matches'
-        unique_together = (('player_name', 'pubg_match_id'),)
+        unique_together = (('player_name', 'pubg_match'),)
         indexes = [
-            models.Index(fields=['pubg_match_id'], name='pubg_match_id_idx_ep'),
+            models.Index(fields=['pubg_match'], name='pubg_match_ep_idx'),
         ]
 
     player_name = models.CharField(max_length=64)

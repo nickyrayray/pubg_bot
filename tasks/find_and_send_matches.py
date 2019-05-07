@@ -3,9 +3,9 @@ django.setup()
 import logging
 import schedule
 import time
-from api_client.pubg_client import PubgClient
-from api_client.responses import player_response_service, match_response_service
-from data_access.services import player_data_service, match_data_service
+from pubg_api_client.pubg_client import PubgClient
+from pubg_api_client.responses import player_response_service, match_response_service
+from game_data.services import player_data_service, match_data_service
 
 client = PubgClient()
 
@@ -47,6 +47,11 @@ def populate_matches():
         )
         total_user_matches.append(user_matches)
     return total_user_matches
+
+
+def post_matches():
+    logger.info('Posting new matches to Slack.')
+    user_matches_to_post = match_data_service.get_matches_to_post()
 
 
 schedule.every(10).minutes.do(find_and_send_matches)
