@@ -19,6 +19,12 @@ class User(models.Model):
 
 class Match(models.Model):
 
+    class Meta:
+        db_table = 'pubg_matches'
+        indexes = [
+            models.Index(fields=['pubg_server_timestamp'], name='pubg_server_timestamp_idx'),
+        ]
+
     pubg_match_id = models.CharField(max_length=36, primary_key=True)
     map_name = models.CharField(max_length=36, null=True)
     duration = models.IntegerField(null=True)
@@ -58,7 +64,7 @@ class UserStats(PlayerStats):
     SENT = 'sent'
 
     class Meta:
-        db_table = 'user_pubg_matches'
+        db_table = 'user_match_data'
         unique_together = (('pubg_player', 'pubg_match'),)
         indexes = [
             models.Index(fields=['pubg_match'], name='pubg_match_idx'),
@@ -72,7 +78,7 @@ class UserStats(PlayerStats):
 class ExtraPlayerStats(PlayerStats):
 
     class Meta:
-        db_table = 'extra_player_pubg_matches'
+        db_table = 'extra_player_match_data'
         unique_together = (('player_name', 'pubg_match'),)
         indexes = [
             models.Index(fields=['pubg_match'], name='pubg_match_ep_idx'),
