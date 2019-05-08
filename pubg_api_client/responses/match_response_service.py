@@ -14,8 +14,8 @@ pubg_server_timestring_format = '%Y-%m-%dT%H:%M:%S'
 
 def get_parsed_match_data(match_json, player_names):
     match_data = _get_match_data(match_json)
-    player_dict = find_persons_json_by_name(match_json, player_names)
-    rosters = find_rosters(match_json, player_dict)
+    player_dict = _find_persons_json_by_name(match_json, player_names)
+    rosters = _find_rosters(match_json, player_dict)
     extra_players = _find_extra_players_json_from_rosters(match_json, rosters)
     player_dict.update(extra_players)
     return match_data, rosters, player_dict
@@ -34,14 +34,14 @@ def _find_extra_players_json_from_rosters(match_json, rosters):
             p['id'] in extra_players}
 
 
-def find_persons_json_by_name(match_json, player_names):
+def _find_persons_json_by_name(match_json, player_names):
     player_portion = [p for p in match_json['included']
                       if p['type'] == 'participant' and
                       p['attributes']['stats']['name'] in player_names]
     return {p['id']: p['attributes']['stats'] for p in player_portion}
 
 
-def find_rosters(match_json, players_dict):
+def _find_rosters(match_json, players_dict):
     roster_jsons = [r for r in match_json['included'] if r['type'] == 'roster']
     rosters = {}
     for roster_json in roster_jsons:
