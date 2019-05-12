@@ -28,7 +28,7 @@ def poll_and_update_player_data():
     player_response = client.get_players_info(players=player_ids)
     player_match_dict = player_response_service.parse_player_data(player_response)
     for player_id, matches in player_match_dict.items():
-        player_data_service.add_new_player_matches(player_id, matches)
+        match_data_service.add_new_player_matches(player_id, matches)
 
 
 def populate_matches():
