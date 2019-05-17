@@ -2,12 +2,13 @@ from decimal import Decimal
 from game_data.models import UserStats, ExtraPlayerStats, Match
 
 
-def add_new_player_matches(player_id, matches):
-    _add_new_matches(matches)
-    matches_to_add_for_player = _get_new_matches_for_user(player_id, matches)
-    user_stats_to_create = [UserStats(pubg_player_id=player_id, pubg_match_id=match_id)
-                            for match_id in matches_to_add_for_player]
-    UserStats.objects.bulk_create(user_stats_to_create)
+def add_new_player_matches(player_match_dict):
+    for player_id, matches in player_match_dict.items():
+        _add_new_matches(matches)
+        matches_to_add_for_player = _get_new_matches_for_user(player_id, matches)
+        user_stats_to_create = [UserStats(pubg_player_id=player_id, pubg_match_id=match_id)
+                                for match_id in matches_to_add_for_player]
+        UserStats.objects.bulk_create(user_stats_to_create)
 
 
 def _add_new_matches(matches):
