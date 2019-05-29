@@ -1,3 +1,4 @@
+import os
 import requests
 import json
 from pubg_api_client.constants import *
@@ -43,5 +44,8 @@ class PubgClient(object):
 
 
 def _get_api_key():
+    environ_key = os.environ.get('PUBG_API_KEY')
+    if environ_key:
+        return environ_key
     with open('credentials/api_key', 'r') as f:
         return f.read()

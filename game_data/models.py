@@ -25,11 +25,11 @@ class Match(models.Model):
             models.Index(fields=['pubg_server_timestamp'], name='pubg_server_timestamp_idx'),
         ]
 
-    pubg_match_id = models.CharField(max_length=36, primary_key=True)
-    map_name = models.CharField(max_length=36, null=True)
+    pubg_match_id = models.CharField(max_length=64, primary_key=True)
+    map_name = models.CharField(max_length=64, null=True)
     duration = models.IntegerField(null=True)
     pubg_server_timestamp = models.DateTimeField(null=True)
-    game_mode = models.CharField(max_length=10, null=True)
+    game_mode = models.CharField(max_length=64, null=True)
 
 
 class PlayerStats(models.Model):
@@ -41,7 +41,7 @@ class PlayerStats(models.Model):
     knock_downs = models.IntegerField(null=True)
     assists = models.IntegerField(null=True)
     boosts = models.IntegerField(null=True)
-    death_type = models.CharField(max_length=10)
+    death_type = models.CharField(max_length=64)
     headshot_kills = models.IntegerField(null=True)
     heals = models.IntegerField(null=True)
     kill_place = models.IntegerField(null=True)
@@ -72,7 +72,7 @@ class UserStats(PlayerStats):
         ]
 
     pubg_player = models.ForeignKey(User)
-    status = models.CharField(max_length=10, default=CREATED)
+    status = models.CharField(max_length=64, default=CREATED)
 
 
 class ExtraPlayerStats(PlayerStats):

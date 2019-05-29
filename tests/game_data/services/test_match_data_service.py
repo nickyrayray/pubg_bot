@@ -92,3 +92,4 @@ class TestAddPlayerMatchesMatchData(TestCase):
 
         self.assertEquals(Match.objects.all().count(), 0)
         self.assertEquals(UserStats.objects.all().count(), 0)
+

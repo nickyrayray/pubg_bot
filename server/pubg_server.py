@@ -17,6 +17,7 @@ def add_player_to_db():
     player_json = client.get_players_info([gamertag], search_criteria='playerNames')
     account_id = player_json[0]['id']
     player_data_service.add_new_user(gamertag, account_id, name)
+    return
 
 
 

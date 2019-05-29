@@ -51,8 +51,8 @@ def get_matches_to_populate():
 def get_matches_to_post():
     user_matches = UserStats.objects.filter(
         status=UserStats.POPULATED
-    ).select_related('pubg_player')
-    return user_matches
+    ).values_list('pubg_match_id', flat=True)
+    return set(user_matches)
 
 
 def enrich_user_matches(match_id, match_data, rosters, player_dict):
@@ -62,6 +62,7 @@ def enrich_user_matches(match_id, match_data, rosters, player_dict):
     for roster_id, roster in rosters.items():
         for player_id in roster['players']:
             player_json = player_dict[player_id]
+            print(player_json)
             user_match = _enrich_user_match(
                 match_id=match_id,
                 roster_id=roster_id,
@@ -131,6 +132,7 @@ def _update_match_with_roster_info(user_match, roster_id, roster_info):
 
 
 def populate_match_with_match_data(match_id, match_data):
+    print(match_data)
     Match.objects.filter(
         pubg_match_id=match_id
     ).update(
@@ -140,3 +142,23 @@ def populate_match_with_match_data(match_id, match_data):
         map_name=match_data['map_name'],
     )
 
+
+def set_matches_to_completed(match_id):
+    UserStats.objects.filter(
+        pubg_match_id=match_id
+    ).update(status=UserStats.SENT)
+
+
+def get_match(match_id):
+    return Match.objects.get(pubg_match_id=match_id)
+
+
+def get_player_stats_for_match(match_id):
+    return UserStats.objects.filter(pubg_match_id=match_id)
+
+
+def get_extra_player_stats_for_match(match_id, roster_id):
+    return list(ExtraPlayerStats.objects.filter(
+        pubg_match_id=match_id,
+        roster_id=roster_id
+    ))
