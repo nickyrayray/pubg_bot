@@ -154,11 +154,10 @@ def get_match(match_id):
 
 
 def get_player_stats_for_match(match_id):
-    return UserStats.objects.filter(pubg_match_id=match_id)
+    return list(UserStats.objects.filter(pubg_match_id=match_id))
 
 
-def get_extra_player_stats_for_match(match_id, roster_id):
+def get_extra_player_stats_for_match(match_id):
     return list(ExtraPlayerStats.objects.filter(
-        pubg_match_id=match_id,
-        roster_id=roster_id
+        pubg_match_id=match_id
     ))

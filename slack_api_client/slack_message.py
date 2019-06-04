@@ -18,12 +18,22 @@ class SlackMessage(object):
 
     def __init__(self, match_id):
         self.match_id = match_id
+        self.match = match_data_service.get_match(match_id)
+        user_stats = match_data_service.get_player_stats_for_match(match_id)
+        extra_player_stats = match_data_service.get_extra_player_stats_for_match(match_id)
+        self.rosters = {}
+        for stats in user_stats + extra_player_stats:
+            if stats.roster_id in self.rosters:
+                self.rosters[stats.roster_id].append(stats)
+            else:
+                self.rosters[stats.roster_id] = [stats]
 
     def to_message_json(self):
-        blocks = [self._divider()]
+        blocks = []
         match_block = self._build_match_block()
         blocks.append(match_block)
         blocks += self._build_team_blocks()
+        blocks += self._divider()
         return {
             'text': self.PREVIEW_TEXT,
             'blocks': blocks
@@ -40,25 +50,16 @@ class SlackMessage(object):
         }
 
     def _get_match_text(self):
-        match = match_data_service.get_match(self.match_id)
         text = self.MATCH_TEXT_TEMPLATE.format(
-            game_mode=match.game_mode.capitalize(),
-            map_name=match.map_name,
-            pubg_timestamp=match.pubg_server_timestamp.strftime('%m-%d-%Y %H:%M:%S')
+            game_mode=self.match.game_mode.capitalize(),
+            map_name=self.match.map_name,
+            pubg_timestamp=self.match.pubg_server_timestamp.strftime('%m-%d-%Y %H:%M:%S')
         )
         return text
 
     def _build_team_blocks(self):
-        user_match_data = match_data_service.get_player_stats_for_match(self.match_id)
-        unique_rosters = {}
-        for user_match in user_match_data:
-            if user_match.roster_id in unique_rosters:
-                unique_rosters[user_match.roster_id].append(user_match)
-            else:
-                unique_rosters[user_match.roster_id] = [user_match]
         blocks = []
-        for roster_id, user_matches in unique_rosters.items():
-            user_matches += match_data_service.get_extra_player_stats_for_match(self.match_id, roster_id)
+        for roster_id, user_matches in self.rosters.items():
             blocks.append(self._build_team_stats_block(user_matches))
             for user_match in user_matches:
                 blocks.append(self._build_individual_stats_block(user_match))
@@ -126,10 +127,12 @@ class SlackMessage(object):
             'type': 'divider'
         }
 
-    def _get_name_from_match_data(self, user_data):
+    @staticmethod
+    def _get_name_from_match_data(user_data):
         return user_data.pubg_player.platform_user_name if hasattr(user_data, 'pubg_player') else user_data.player_name
 
-    def _stringify_time_survived(self, time_survived):
+    @staticmethod
+    def _stringify_time_survived(time_survived):
         minutes = int(time_survived / 60)
         seconds = time_survived % 60
         return "{minutes} minutes, {seconds} seconds".format(
@@ -138,8 +141,5 @@ class SlackMessage(object):
         )
 
     def _get_percentage_of_time_survived(self, time_survived):
-        match_time = match_data_service.get_match(self.match_id).duration
+        match_time = self.match.duration
         return (time_survived/Decimal(match_time)) * 100
-
-    def _get_player_name(self, user_data):
-        return user_data.pubg_player.platform_user_name if hasattr(user_data, 'pubg_player') else user_data.player_name
