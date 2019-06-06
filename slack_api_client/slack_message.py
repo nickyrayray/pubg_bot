@@ -33,7 +33,7 @@ class SlackMessage(object):
         match_block = self._build_match_block()
         blocks.append(match_block)
         blocks += self._build_team_blocks()
-        blocks += self._divider()
+        blocks.append(self._divider())
         return {
             'text': self.PREVIEW_TEXT,
             'blocks': blocks
@@ -122,7 +122,8 @@ class SlackMessage(object):
         )
         return text
 
-    def _divider(self):
+    @staticmethod
+    def _divider():
         return {
             'type': 'divider'
         }

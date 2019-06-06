@@ -118,9 +118,11 @@ def _update_match_with_player_data(user_match, player_json):
     user_match.kill_place = int(player_json['killPlace'])
     user_match.kills = int(player_json['kills'])
     user_match.longest_kill = Decimal(player_json['longestKill'])
+    user_match.road_kills = int(player_json['roadKills'])
     user_match.revives = int(player_json['revives'])
     user_match.team_kills = int(player_json['teamKills'])
     user_match.time_survived = Decimal(player_json['timeSurvived'])
+    user_match.walk_distance = Decimal(player_json['walkDistance'])
     user_match.weapons_acquired = int(player_json['weaponsAcquired'])
     user_match.win_place = int(player_json['winPlace'])
 
