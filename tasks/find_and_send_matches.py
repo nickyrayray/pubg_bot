@@ -31,6 +31,7 @@ def poll_and_update_player_data(pubg_client):
     player_ids = player_data_service.get_player_ids()
     if not player_ids:
         logger.info('No players in our database. Add some players!')
+        return
     logger.info('Found %s players to lookup', len(player_ids))
     player_response = pubg_client.get_players_info(players=player_ids)
     player_match_dict = player_response_service.parse_player_data(player_response)
