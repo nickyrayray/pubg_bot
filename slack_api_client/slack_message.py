@@ -17,7 +17,6 @@ class SlackMessage(object):
     TEAM_TEMPLATE = 'Team of {names} ranked {team_rank}! {phrase}'
 
     def __init__(self, match_id):
-        self.match_id = match_id
         self.match = match_data_service.get_match(match_id)
         user_stats = match_data_service.get_player_stats_for_match(match_id)
         extra_player_stats = match_data_service.get_extra_player_stats_for_match(match_id)
@@ -33,6 +32,7 @@ class SlackMessage(object):
         match_block = self._build_match_block()
         blocks.append(match_block)
         blocks += self._build_team_blocks()
+        blocks.append(self._build_match_id_context_block())
         blocks.append(self._divider())
         return {
             'text': self.PREVIEW_TEXT,
@@ -121,6 +121,17 @@ class SlackMessage(object):
             survival_percentage=percent_time_survived
         )
         return text
+
+    def _build_match_id_context_block(self):
+        return {
+            'type': 'context',
+            'elements': [
+                {
+                    "type": "mrkdwn",
+                    "text": "Match Id: {}".format(self.match.id)
+                }
+            ]
+        }
 
     @staticmethod
     def _divider():
