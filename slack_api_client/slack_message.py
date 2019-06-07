@@ -128,7 +128,7 @@ class SlackMessage(object):
             'elements': [
                 {
                     "type": "mrkdwn",
-                    "text": "Match Id: {}".format(self.match.id)
+                    "text": "Match Id: {}".format(self.match.pubg_match_id)
                 }
             ]
         }
