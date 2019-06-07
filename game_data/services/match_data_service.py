@@ -62,7 +62,6 @@ def enrich_user_matches(match_id, match_data, rosters, player_dict):
     for roster_id, roster in rosters.items():
         for player_id in roster['players']:
             player_json = player_dict[player_id]
-            print(player_json)
             user_match = _enrich_user_match(
                 match_id=match_id,
                 roster_id=roster_id,
@@ -134,7 +133,6 @@ def _update_match_with_roster_info(user_match, roster_id, roster_info):
 
 
 def populate_match_with_match_data(match_id, match_data):
-    print(match_data)
     Match.objects.filter(
         pubg_match_id=match_id
     ).update(
