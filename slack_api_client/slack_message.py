@@ -1,3 +1,4 @@
+import calendar
 from decimal import Decimal
 from game_data.services import match_data_service
 
@@ -5,16 +6,17 @@ from game_data.services import match_data_service
 class SlackMessage(object):
 
     PREVIEW_TEXT = 'Pubg match completed'
-    MATCH_TEXT_TEMPLATE = "*{game_mode}* match completed on *{map_name}* at `{pubg_timestamp}`"
+    MATCH_TEXT_TEMPLATE = "*{game_mode}* match completed on *{map_name}* on `{pubg_timestamp}`"
     INDIVIDUAL_TEXT_TEMPLATE = "*{name}* ranked {win_place}, got {kills} kills, {knocks} knocks, {assists} assists, " \
                                "revived {revives} teammates, and used {heals} healing items."
     KILL_DETAIL_TEMPLATE = 'They got {h_kills} headshot kills. Their longest kill was {kill_meters} meters ' \
                            'away. They killed {team_kills} teammates. Their kill place was {kill_place}.'
     SURVIVE_TEMPLATE = 'They survived {time_survived}, or {survival_percentage:.2f}% of the match.'
-    WIN_PHRASE = 'Winner Winner Chicken Dinner!!'
+    WIN_PHRASE = '*WINNER WINNER CHICKEN DINNER!!*'
     TOP_TEN_PHRASE = 'Made the top 10!'
     LOST_PHRASE = 'You bad!'
     TEAM_TEMPLATE = 'Team of {names} ranked {team_rank}! {phrase}'
+    SLACK_TIMESTAMP_TEMPLATE = '<!date^{timestamp}^{date} at {time_secs}|{unformatted} UTC>'
 
     def __init__(self, match_id):
         self.match = match_data_service.get_match(match_id)
@@ -53,7 +55,7 @@ class SlackMessage(object):
         text = self.MATCH_TEXT_TEMPLATE.format(
             game_mode=self.match.game_mode.capitalize(),
             map_name=self.match.map_name,
-            pubg_timestamp=self.match.pubg_server_timestamp.strftime('%m-%d-%Y %H:%M:%S')
+            pubg_timestamp=self._datetime_to_slack_formatting(self.match.pubg_server_timestamp)
         )
         return text
 
@@ -155,3 +157,12 @@ class SlackMessage(object):
     def _get_percentage_of_time_survived(self, time_survived):
         match_time = self.match.duration
         return (time_survived/Decimal(match_time)) * 100
+
+    def _datetime_to_slack_formatting(self, dt):
+        unix_timestamp = calendar.timegm(dt.timetuple())
+        return self.SLACK_TIMESTAMP_TEMPLATE.format(
+            timestamp=int(unix_timestamp),
+            date='{date}',
+            time_secs='{time_secs}',
+            unformatted=dt.strftime('%m-%d-%Y %H:%M:%S')
+        )
