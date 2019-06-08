@@ -1,6 +1,7 @@
 from flask import Flask, request
 from pubg_api_client.pubg_client import PubgClient
 from game_data.services import player_data_service, match_data_service
+from server.services import auth, url_verification
 
 
 app = Flask(__name__)
@@ -19,5 +20,14 @@ def add_player_to_db():
     player_data_service.add_new_user(gamertag, account_id, name)
     return 'Successfully added player {}'.format(gamertag)
 
+
+@app.route('/slack/event', methods=['POST'])
+@auth.slack_auth_required
+def deal_with_slack_event():
+    request_payload = request.get_json()
+    if request_payload.get('type') == 'url_verification':
+        return url_verification.do_request_verification(request_payload)
+    else:
+        return 'Unsupported Event Type', 400
 
 
