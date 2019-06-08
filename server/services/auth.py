@@ -15,7 +15,7 @@ def slack_auth_required(handler):
         body = request.get_data(as_text=True)
         timestamp_header = request.headers.get('X-Slack-Request-Timestamp')
         sig_basestring = 'v0:' + timestamp_header + ':' + body
-        comp_signature = 'v0=' + hmac.new(SLACK_SIGNING_SECRET, sig_basestring, hashlib.sha256).hexdigest()
+        comp_signature = 'v0=' + hmac.new(SLACK_SIGNING_SECRET.encode(), sig_basestring.encode(), hashlib.sha256).hexdigest()
         if hmac.compare_digest(comp_signature, req_signature):
             return handler(*args, **kwargs)
         else:
