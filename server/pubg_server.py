@@ -47,4 +47,7 @@ def deal_with_slack_event():
 def post_response(request_payload):
     resp = slack_response_service.handle_event_response(**request_payload)
     resp.update({'token': os.environ.get('SLACK_BOT_TOKEN')})
-    requests.post('https://slack.com/api/chat.postMessage', json=resp)
+    logger.info(resp)
+    my_resp = requests.post('https://slack.com/api/chat.postMessage', json=resp)
+    logger.info('the response')
+    logger.info(my_resp)
