@@ -4,6 +4,12 @@ from pubg_api_client.pubg_client import PubgClient
 from game_data.services import player_data_service, match_data_service
 from server.services import auth, slack_response_service
 
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 
@@ -29,7 +35,7 @@ def deal_with_slack_event():
     if request_payload.get('type') == 'url_verification':
         return slack_response_service.do_request_verification(request_payload)
     else:
-        logging.info(request_payload)
+        logger.info(request_payload)
         return 'Unsupported Event Type', 400
 
 
