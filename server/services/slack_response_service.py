@@ -13,7 +13,7 @@ def do_request_verification(request_body):
 
 
 def handle_event_response(event, **_):
-    response = {'channel': event.get('channel')}
+    response = {'channel': event.get('channel'), 'text': 'test response'}
     event_type = event.get('type')
     if event_type == 'app_mention':
         response.update(_handle_app_mention(event.get('text')))
