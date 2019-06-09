@@ -50,4 +50,5 @@ def post_response(request_payload):
     logger.info(resp)
     my_resp = requests.post('https://slack.com/api/chat.postMessage', json=resp)
     logger.info('the response')
-    logger.info(my_resp)
+    logger.info(my_resp.json())
+    
