@@ -19,3 +19,7 @@ def add_new_user(gamertag, account_id, name):
         platform_user_name=gamertag,
         first_name=name
     )
+
+
+def get_user_by_name(username_or_name):
+    pass
