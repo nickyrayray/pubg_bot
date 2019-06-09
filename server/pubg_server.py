@@ -38,7 +38,7 @@ def deal_with_slack_event():
     if request_payload.get('type') == 'url_verification':
         return slack_response_service.do_request_verification(request_payload)
     else:
-        t = threading.Thread(target=post_response, kwargs=request_payload)
+        t = threading.Thread(target=post_response, args=request_payload)
         logger.info(request_payload)
         t.start()
         return '', 200
