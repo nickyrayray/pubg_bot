@@ -1,4 +1,7 @@
 import logging
+import requests
+import os
+import threading
 from flask import Flask, request
 from pubg_api_client.pubg_client import PubgClient
 from game_data.services import player_data_service, match_data_service
@@ -35,7 +38,13 @@ def deal_with_slack_event():
     if request_payload.get('type') == 'url_verification':
         return slack_response_service.do_request_verification(request_payload)
     else:
+        t = threading.Thread(target=post_response, kwargs=request_payload)
         logger.info(request_payload)
-        return 'Unsupported Event Type', 400
+        t.start()
+        return '', 200
 
 
+def post_response(request_payload):
+    resp = slack_response_service.handle_event_response(**request_payload)
+    resp.update({'token': os.environ.get('SLACK_BOT_TOKEN')})
+    requests.post('https://slack.com/api/chat.postMessage', json=resp)
