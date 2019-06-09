@@ -12,8 +12,8 @@ def do_request_verification(request_body):
     return resp
 
 
-def handle_event_response(event, channel=None, **_):
-    response = {'channel': channel}
+def handle_event_response(event, **_):
+    response = {'channel': event.get('channel')}
     event_type = event.get('type')
     if event_type == 'app_mention':
         response.update(_handle_app_mention(event.get('text')))
