@@ -61,7 +61,6 @@ class Telemetry(object):
             logger.info('No associated DBNO for kill. Defaulting to kill event for weapon.')
             return None
 
-
     def _load_assets(self):
         if not self.ASSETS:
             with open('/app/assets/damageCauserName.json') as f:
@@ -69,7 +68,6 @@ class Telemetry(object):
 
     @staticmethod
     def _server_timestring_to_datetime(pubg_server_time_string):
-        print(pubg_server_time_string)
         pubg_server_time_string = pubg_server_time_string[:-1]  # remove Z that python datetime can't handle
         dt = datetime.strptime(pubg_server_time_string, pubg_server_timestring_format)
         return dt
