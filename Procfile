@@ -1,2 +1,2 @@
 web: gunicorn server.pubg_server:app
-worker: hooks/start_worker.sh
+worker: python -m tasks.find_and_send_matches
