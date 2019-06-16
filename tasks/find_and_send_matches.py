@@ -6,7 +6,7 @@ import schedule
 import time
 from pubg_api_client.pubg_client import PubgClient
 from pubg_api_client.responses import player_response_service, match_response_service
-from game_data.services import player_data_service, match_data_service
+from game_data.services import player_data_service, match_data_service, telemetry_data_service
 from slack_api_client.slack_client import SlackClient
 
 
@@ -45,13 +45,18 @@ def populate_matches(pubg_client):
     logger.info('Found %s new matches to populate.', len(new_matches))
     for match_id, player_names in new_matches.items():
         match_response = pubg_client.get_match_details(match_id)
-        match_data, rosters, player_dict = match_response_service.get_parsed_match_data(match_response, player_names)
-        user_matches = match_data_service.enrich_user_matches(
+        match_data, rosters, player_dict, telemetry = match_response_service.get_parsed_match_data(
+            match_response,
+            player_names
+        )
+        user_matches, ep_matches = match_data_service.enrich_user_matches(
             match_id=match_id,
             match_data=match_data,
             rosters=rosters,
             player_dict=player_dict
         )
+        telemetry_data_service.add_user_kills(user_matches, telemetry)
+        telemetry_data_service.add_user_kills(ep_matches, telemetry)
         total_user_matches.append(user_matches)
     return total_user_matches
 

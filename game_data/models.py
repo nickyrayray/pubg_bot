@@ -58,6 +58,9 @@ class PlayerStats(models.Model):
     team_rank = models.IntegerField(null=True)
     won = models.NullBooleanField(null=True)
 
+    def get_identifier(self):
+        raise NotImplementedError
+
 
 class UserStats(PlayerStats):
 
@@ -76,6 +79,9 @@ class UserStats(PlayerStats):
     pubg_player = models.ForeignKey(User)
     status = models.CharField(max_length=64, default=CREATED)
 
+    def get_identifier(self):
+        return self.pubg_player_id
+
 
 class ExtraPlayerStats(PlayerStats):
 
@@ -87,3 +93,22 @@ class ExtraPlayerStats(PlayerStats):
         ]
 
     player_name = models.CharField(max_length=64)
+
+    def get_identifier(self):
+        return self.player_name
+
+
+class UserKills(models.Model):
+
+    class Meta:
+        db_table = 'user_kill_data'
+
+    pubg_match = models.ForeignKey(Match)
+    killer_id = models.CharField(max_length=64, db_index=True)
+    killer_name = models.CharField(max_length=100)
+    victim_id = models.CharField(max_length=200)
+    victim_name = models.CharField(max_length=100)
+    weapon = models.CharField(max_length=100)
+    distance = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+    kill_timestamp = models.DateTimeField()
+

@@ -1,6 +1,6 @@
 import calendar
 from decimal import Decimal
-from game_data.services import match_data_service
+from game_data.services import match_data_service, telemetry_data_service
 
 
 class SlackMessage(object):
@@ -8,15 +8,16 @@ class SlackMessage(object):
     PREVIEW_TEXT = 'Pubg match completed'
     MATCH_TEXT_TEMPLATE = "*{game_mode}* match completed on *{map_name}* on `{pubg_timestamp}`"
     INDIVIDUAL_TEXT_TEMPLATE = "*{name}* ranked {win_place}, got {kills} kills, {knocks} knocks, {assists} assists, " \
-                               "revived {revives} teammates, and used {heals} healing items."
+                               "revived {revives} teammates, and used {heals} healing items. "
     KILL_DETAIL_TEMPLATE = 'They got {h_kills} headshot kills. Their longest kill was {kill_meters} meters ' \
-                           'away. They killed {team_kills} teammates. Their kill place was {kill_place}.'
+                           'away. They killed {team_kills} teammates. Their kill place was {kill_place}. '
     SURVIVE_TEMPLATE = 'They survived {time_survived}, or {survival_percentage:.2f}% of the match.'
     WIN_PHRASE = '*WINNER WINNER CHICKEN DINNER!!*'
     TOP_TEN_PHRASE = 'Made the top 10!'
     LOST_PHRASE = 'You bad!'
     TEAM_TEMPLATE = 'Team of {names} ranked {team_rank}! {phrase}'
     SLACK_TIMESTAMP_TEMPLATE = '<!date^{timestamp}^{date} at {time_secs}|{unformatted} UTC>'
+    KILL_ENUM_TEMPLATE = 'Killed `{name}` with a *{weapon}* from `{distance:.2f}` meters away.'
 
     def __init__(self, match_id):
         self.match = match_data_service.get_match(match_id)
@@ -102,6 +103,7 @@ class SlackMessage(object):
     def _build_individual_stats_text(self, user_data):
         time_survived_string = self._stringify_time_survived(user_data.time_survived)
         percent_time_survived = self._get_percentage_of_time_survived(user_data.time_survived)
+        kill_text = None
         text = self.INDIVIDUAL_TEXT_TEMPLATE.format(
             name=self._get_name_from_match_data(user_data),
             win_place=user_data.win_place,
@@ -118,10 +120,18 @@ class SlackMessage(object):
                 team_kills=user_data.team_kills,
                 kill_place=user_data.kill_place
             )
+            kill_details = telemetry_data_service.get_user_kills(user_data.pubg_match_id, user_data.get_identifier())
+            kill_text = '\n'.join([self.KILL_ENUM_TEMPLATE.format(
+                name=kill.victim_name,
+                distance=kill.distance / Decimal(100.0),
+                weapon=kill.weapon,
+            ) for kill in kill_details])
         text += self.SURVIVE_TEMPLATE.format(
             time_survived=time_survived_string,
             survival_percentage=percent_time_survived
         )
+        if kill_text:
+            text += '\n' + kill_text
         return text
 
     def _build_match_id_context_block(self):

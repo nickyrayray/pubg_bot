@@ -1,13 +1,7 @@
+import json
 from datetime import datetime
 from functools import reduce
-
-server_name_to_canonical_name = {
-  "Desert_Main": "Miramar",
-  "DihorOtok_Main": "Vikendi",
-  "Erangel_Main": "Erangel",
-  "Range_Main": "Camp Jackal",
-  "Savage_Main": "Sanhok"
-}
+from pubg_api_client.responses.telemetry_response_service import Telemetry
 
 pubg_server_timestring_format = '%Y-%m-%dT%H:%M:%S'
 
@@ -18,7 +12,8 @@ def get_parsed_match_data(match_json, player_names):
     rosters = _find_rosters(match_json, player_dict)
     extra_players = _find_extra_players_json_from_rosters(match_json, rosters)
     player_dict.update(extra_players)
-    return match_data, rosters, player_dict
+    telemetry = _get_telemetry(match_json)
+    return match_data, rosters, player_dict, telemetry
 
 
 def _find_extra_players_json_from_rosters(match_json, rosters):
@@ -85,8 +80,21 @@ def _server_timestring_to_datetime(pubg_server_time_string):
 
 
 def _map_server_name_to_canonical_name(name):
+
+    with open('/app/assets/mapNames.json') as f:
+        server_name_to_canonical_name = json.loads(f.read())
+
     canonical_name = server_name_to_canonical_name.get(name, None)
     if not canonical_name:
         raise ValueError('Map name not found')
     else:
         return canonical_name
+
+
+def _get_telemetry(match_json):
+    assets_urls = [d['attributes']['URL'] for d in match_json['included']
+                   if d['type'] == 'asset']
+    if len(assets_urls) != 1:
+        raise ValueError('Unexpected number of assets')
+
+    return Telemetry(assets_urls[0])

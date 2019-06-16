@@ -99,7 +99,7 @@ def _create_extra_player_match(match_id, roster_id, roster_info, player_json):
     player_name = player_json['name']
     extra_player_match = ExtraPlayerStats.objects.create(
         pubg_match_id=match_id,
-        player_name=player_name
+        player_name=player_name,
     )
     _update_match_with_roster_info(extra_player_match, roster_id, roster_info)
     _update_match_with_player_data(extra_player_match, player_json)
