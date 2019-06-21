@@ -1,5 +1,6 @@
 import argparse
 import django
+django.setup()
 import logging
 from pubg_api_client.pubg_client import PubgClient
 from pubg_api_client.responses import match_response_service
@@ -80,7 +81,6 @@ def setup_logger():
 
 if __name__ == '__main__':
     setup_logger()
-    django.setup()
     parser = argparse.ArgumentParser(description='Backfill script to populate match kill data for existing matches')
     parser.add_argument('--noop', help='if true, print stats rather than perform actual updates', action='store_true')
     args = parser.parse_args()
