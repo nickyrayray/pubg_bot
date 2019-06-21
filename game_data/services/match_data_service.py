@@ -99,7 +99,7 @@ def _ignore_quit_matches(match_id, user_matches, extra_player_matches):
 
     for roster_id, walk_distances in rosters.items():
         if all([dist == Decimal(0) for dist in walk_distances]):
-            logger.info('Match %s was quit as all walk distances are 0. Ignoring...')
+            logger.info('Match %s was quit by team %s as all walk distances are 0. Ignoring...', match_id, roster_id)
             UserStats.objects.filter(
                 pubg_match_id=match_id,
                 roster_id=roster_id

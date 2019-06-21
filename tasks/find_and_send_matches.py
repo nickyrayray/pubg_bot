@@ -75,7 +75,7 @@ if __name__ == '__main__':
     parser.add_argument('--slack_webhook_path', help='optional slack webhook path to override env variable value')
     args = parser.parse_args()
     logger.info('using %s as webhook path', args.slack_webhook_path)
-    schedule.every(10).minutes.do(find_and_send_matches, slack_webhook_id=args.slack_webhook_path)
+    schedule.every(5).minutes.do(find_and_send_matches, slack_webhook_id=args.slack_webhook_path)
     while True:
         schedule.run_pending()
         time.sleep(30)
