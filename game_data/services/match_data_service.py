@@ -1,5 +1,8 @@
+import logging
 from decimal import Decimal
 from game_data.models import UserStats, ExtraPlayerStats, Match
+
+logger = logging.getLogger(__name__)
 
 
 def add_new_player_matches(player_match_dict):
@@ -79,7 +82,28 @@ def enrich_user_matches(match_id, match_data, rosters, player_dict):
             )
             extra_player_matches.append(extra_player_match)
 
+    _ignore_quit_matches(match_id, user_matches, extra_player_matches)
     return user_matches, extra_player_matches
+
+
+def _ignore_quit_matches(match_id, user_matches, extra_player_matches):
+    rosters = {}
+    for user_match in user_matches:
+        if user_match.roster_id in rosters:
+            rosters[user_match.roster_id].append(user_match.walk_distance)
+        else:
+            rosters[user_match.roster_id] = [user_match.walk_distance]
+
+    for ep_match in extra_player_matches:
+        rosters[ep_match.roster_id].append(ep_match.walk_distance)
+
+    for roster_id, walk_distances in rosters.items():
+        if all([dist == Decimal(0) for dist in walk_distances]):
+            logger.info('Match %s was quit as all walk distances are 0. Ignoring...')
+            UserStats.objects.filter(
+                pubg_match_id=match_id,
+                roster_id=roster_id
+            ).update(status=UserStats.SKIPPED)
 
 
 def _enrich_user_match(match_id, roster_id, roster_info, player_json):

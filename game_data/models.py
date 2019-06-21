@@ -67,6 +67,7 @@ class UserStats(PlayerStats):
     CREATED = 'created'
     POPULATED = 'populated'
     SENT = 'sent'
+    SKIPPED = 'skipped'
 
     class Meta:
         db_table = 'user_match_data'
@@ -111,4 +112,3 @@ class UserKills(models.Model):
     weapon = models.CharField(max_length=100)
     distance = models.DecimalField(null=True, max_digits=10, decimal_places=2)
     kill_timestamp = models.DateTimeField()
-
