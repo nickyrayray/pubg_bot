@@ -8,6 +8,11 @@ from game_data.models import *
 from game_data.services import telemetry_data_service
 
 logger = logging.getLogger()
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 
 def main(noop=False):
@@ -76,14 +81,7 @@ def get_ep_matches(match_id):
     )
 
 
-def setup_logger(log):
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
-    log.addHandler(handler)
-
-
 if __name__ == '__main__':
-    setup_logger(logger)
     parser = argparse.ArgumentParser(description='Backfill script to populate match kill data for existing matches')
     parser.add_argument('--noop', help='if true, print stats rather than perform actual updates', action='store_true')
     args = parser.parse_args()
