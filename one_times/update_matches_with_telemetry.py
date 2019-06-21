@@ -7,7 +7,7 @@ from pubg_api_client.responses import match_response_service
 from game_data.models import *
 from game_data.services import telemetry_data_service
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 def main(noop=False):
@@ -76,15 +76,14 @@ def get_ep_matches(match_id):
     )
 
 
-def setup_logger():
-    root = logging.getLogger()
+def setup_logger(log):
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
-    root.addHandler(handler)
+    log.addHandler(handler)
 
 
 if __name__ == '__main__':
-    setup_logger()
+    setup_logger(logger)
     parser = argparse.ArgumentParser(description='Backfill script to populate match kill data for existing matches')
     parser.add_argument('--noop', help='if true, print stats rather than perform actual updates', action='store_true')
     args = parser.parse_args()
