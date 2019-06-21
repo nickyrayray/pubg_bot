@@ -54,7 +54,11 @@ def get_match_ids_with_kill_data():
 def get_match_data_if_exists(match_id):
     client = PubgClient()
     try:
-        return client.get_match_details(match_id)
+        match_json = client.get_match_details(match_id)
+        if 'included' in match_json:
+            return match_json
+        else:
+            logger.info('Match not found: %s', match_json)
     except:
         logger.exception('Failed to get match data')
         return None
