@@ -6,10 +6,11 @@ from pubg_api_client.constants import *
 
 class PubgClient(object):
 
-    def __init__(self, platform='xbox'):
+    def __init__(self, platform='xbox', api_key=None):
+        self.api_key = api_key
         self.base_url = PUBG_DOMAIN.format(platform=platform)
         self.headers = {
-            "Authorization": "Bearer {}".format(_get_api_key()),
+            "Authorization": "Bearer {}".format(self._get_api_key()),
             "Accept": "application/vnd.api+json"
         }
 
@@ -42,10 +43,11 @@ class PubgClient(object):
             params=params
         )
 
-
-def _get_api_key():
-    environ_key = os.environ.get('PUBG_API_KEY')
-    if environ_key:
-        return environ_key
-    with open('credentials/api_key', 'r') as f:
-        return f.read()
+    def _get_api_key(self):
+        if not self.api_key:
+            environ_key = os.environ.get('PUBG_API_KEY')
+            if environ_key:
+                return environ_key
+            with open('credentials/api_key', 'r') as f:
+                return f.read()
+        return self.api_key

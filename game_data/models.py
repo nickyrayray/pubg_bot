@@ -1,4 +1,24 @@
 from django.db import models
+from game_data.services import pubg_crypto
+
+
+class UserLeague(models.Model):
+    class Meta:
+        db_table = 'pubg_user_league'
+        indexes = [
+            models.Index(fields=['pubg_league_name'], name='pubg_league_name_uix')
+        ]
+
+    pubg_league_name = models.CharField(max_length=255)
+    pubg_api_key = models.TextField(max_length=255)
+
+    def get_pubg_api_key(self):
+        return pubg_crypto.decrypt(self.pubg_api_key)
+
+    def set_pubg_api_key(self, unenc_key, save=False):
+        self.pubg_api_key = pubg_crypto.encrypt(unenc_key)
+        if save:
+            self.save()
 
 
 class User(models.Model):
@@ -6,9 +26,11 @@ class User(models.Model):
     class Meta:
         db_table = 'pubg_user'
         indexes = [
-            models.Index(fields=['platform_user_name'], name='platform_user_name_uix')
+            models.Index(fields=['platform_user_name'], name='platform_user_name_uix'),
+            models.Index(fields=['pubg_user_league'], name='pubg_user_league_ix')
         ]
 
+    pubg_user_league = models.ForeignKey(UserLeague, null=True)
     pubg_player_id = models.CharField(max_length=200, primary_key=True)
     platform_user_name = models.CharField(max_length=100, unique=True)
     first_name = models.CharField(max_length=32, null=True)

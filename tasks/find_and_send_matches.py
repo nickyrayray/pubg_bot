@@ -19,18 +19,21 @@ logger.setLevel(logging.INFO)
 
 
 def find_and_send_matches(slack_webhook_id=None):
-    pubg_client = PubgClient()
     slack_client = SlackClient(webhook_identifier=slack_webhook_id)
     logger.info('Starting job to poll for new matches.')
-    poll_and_update_player_data(pubg_client)
-    populate_matches(pubg_client)
-    post_matches(slack_client)
+    for user_league in player_data_service.get_user_leagues():
+        logger.info('Looking for new matches for players in %s league', user_league.pubg_league_name)
+        api_key = user_league.get_pubg_api_key()
+        pubg_client = PubgClient(api_key=api_key)
+        poll_and_update_player_data(user_league.id, pubg_client)
+        populate_matches(pubg_client)
+        post_matches(slack_client)
 
 
-def poll_and_update_player_data(pubg_client):
-    player_ids = player_data_service.get_player_ids()
+def poll_and_update_player_data(user_league_id, pubg_client):
+    player_ids = player_data_service.get_player_ids_for_league(user_league_id)
     if not player_ids:
-        logger.info('No players in our database. Add some players!')
+        logger.info('No players for this league. Add some players!')
         return
     logger.info('Found %s players to lookup', len(player_ids))
     player_response = pubg_client.get_players_info(players=player_ids)
