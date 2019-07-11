@@ -44,6 +44,11 @@ def deal_with_slack_event():
         return '', 200
 
 
+@app.route('/hello', methods=['GET'])
+def hello_world():
+    return "Hello World!"
+
+
 def post_response(request_payload):
     resp = slack_response_service.handle_event_response(**request_payload)
     headers = {'Authorization': 'Bearer {}'.format(os.environ.get('SLACK_BOT_TOKEN'))}

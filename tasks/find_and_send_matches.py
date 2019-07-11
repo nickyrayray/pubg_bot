@@ -7,7 +7,7 @@ import time
 from pubg_api_client.pubg_client import PubgClient
 from pubg_api_client.responses import player_response_service, match_response_service
 from game_data.services import player_data_service, match_data_service, telemetry_data_service
-from slack_api_client.slack_client import SlackClient
+from comm_clients.slack.slack_client import SlackClient
 
 
 logger = logging.getLogger()

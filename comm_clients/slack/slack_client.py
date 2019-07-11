@@ -1,7 +1,7 @@
 import os
 import logging
 import requests
-from slack_api_client.slack_message import SlackMessage
+from comm_clients.slack.slack_message import SlackMessage
 
 logger = logging.getLogger(__name__)
 
