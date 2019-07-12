@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /app/pubg_bot
+    destination: /home/ec2-user/apps/pubg_bot
 hooks:
   AfterInstall:
     - location: code-deploy-scripts/install_dependencies.sh
