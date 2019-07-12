@@ -30,7 +30,7 @@ class User(models.Model):
             models.Index(fields=['pubg_user_league'], name='pubg_user_league_ix')
         ]
 
-    pubg_user_league = models.ForeignKey(UserLeague, null=True)
+    pubg_user_league = models.ForeignKey(UserLeague, null=True, on_delete=models.SET_NULL)
     pubg_player_id = models.CharField(max_length=200, primary_key=True)
     platform_user_name = models.CharField(max_length=100, unique=True)
     first_name = models.CharField(max_length=32, null=True)
@@ -59,7 +59,7 @@ class PlayerStats(models.Model):
     class Meta:
         abstract = True
 
-    pubg_match = models.ForeignKey(Match)
+    pubg_match = models.ForeignKey(Match, on_delete=models.DO_NOTHING)
     knock_downs = models.IntegerField(null=True)
     assists = models.IntegerField(null=True)
     boosts = models.IntegerField(null=True)
@@ -99,7 +99,7 @@ class UserStats(PlayerStats):
             models.Index(fields=['status'], name='status_idx')
         ]
 
-    pubg_player = models.ForeignKey(User)
+    pubg_player = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     status = models.CharField(max_length=64, default=CREATED)
 
     def get_identifier(self):
@@ -126,7 +126,7 @@ class UserKills(models.Model):
     class Meta:
         db_table = 'user_kill_data'
 
-    pubg_match = models.ForeignKey(Match)
+    pubg_match = models.ForeignKey(Match, on_delete=models.DO_NOTHING)
     killer_id = models.CharField(max_length=64, db_index=True)
     killer_name = models.CharField(max_length=100)
     victim_id = models.CharField(max_length=200)
