@@ -4,4 +4,4 @@ cd /app/pubg_bot
 
 . venv/bin/activate
 
-gunicorn server.pubg_server:app
+gunicorn server.pubg_server:app --daemon
