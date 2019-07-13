@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /home/ec2-user/apps/pubg_bot
+cd /app/pubg_bot
 
 pip install virtualenv
 virtualenv venv
