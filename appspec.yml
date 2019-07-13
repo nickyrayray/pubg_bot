@@ -17,3 +17,7 @@ hooks:
     - location: code-deploy-scripts/start_server.sh
       timeout: 300
       runas: ec2-user
+  ApplicationStop:
+    - location: code-deploy-scripts/stop_server.sh
+      timeout: 300
+      runas: ec2-user
