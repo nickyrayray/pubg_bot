@@ -2,7 +2,11 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/apps/pubg_bot
+    destination: /app/pubg_bot
+permissions:
+  - object: /app/pubg_bot
+    owner: ec2-user
+    group: ec2-user
 hooks:
   AfterInstall:
     - location: code-deploy-scripts/install_dependencies.sh
