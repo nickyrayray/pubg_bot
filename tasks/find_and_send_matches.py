@@ -70,6 +70,7 @@ def post_matches(slack_client):
     for match_id in match_ids_to_post:
         slack_client.post_match(match_id)
         match_data_service.set_matches_to_completed(match_id)
+        match_data_service.cleanup_extra_player_data(match_id)
         time.sleep(10)
 
 

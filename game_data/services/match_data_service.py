@@ -185,3 +185,9 @@ def get_extra_player_stats_for_match(match_id):
     return list(ExtraPlayerStats.objects.filter(
         pubg_match_id=match_id
     ))
+
+
+def cleanup_extra_player_data(match_id):
+    ExtraPlayerStats.objects.filter(
+        pubg_match_id=match_id
+    ).delete()
