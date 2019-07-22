@@ -9,7 +9,7 @@ class SlackMessage(object):
     MATCH_TEXT_TEMPLATE = "*{game_mode}* match completed on *{map_name}* on `{pubg_timestamp}`"
     INDIVIDUAL_TEXT_TEMPLATE = "*{name}* ranked {win_place}, got {kills} kills, {knocks} knocks, {assists} assists, " \
                                "revived {revives} teammates, did {damage} points of damage, " \
-                               "used {boosts} boosts, and used {heals} healing items. "
+                               "used {boosts} stims, and used {heals} healing items. "
     KILL_DETAIL_TEMPLATE = 'They got {h_kills} headshot kills. Their longest kill was {kill_meters} meters ' \
                            'away. They killed {team_kills} teammates. Their kill place was {kill_place}. '
     SURVIVE_TEMPLATE = 'They survived {time_survived}, or {survival_percentage:.2f}% of the match.'
