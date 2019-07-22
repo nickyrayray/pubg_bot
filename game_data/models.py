@@ -64,6 +64,7 @@ class PlayerStats(models.Model):
     assists = models.IntegerField(null=True)
     boosts = models.IntegerField(null=True)
     death_type = models.CharField(max_length=64)
+    damage_dealt = models.DecimalField(null=True, max_digits=10, decimal_places=2)
     headshot_kills = models.IntegerField(null=True)
     heals = models.IntegerField(null=True)
     kill_place = models.IntegerField(null=True)

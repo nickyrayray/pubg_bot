@@ -136,6 +136,7 @@ def _update_match_with_player_data(user_match, player_json):
     user_match.assists = int(player_json['assists'])
     user_match.boosts = int(player_json['boosts'])
     user_match.death_type = player_json['deathType']
+    user_match.damage_dealt = Decimal(player_json['damageDealt'])
     user_match.headshot_kills = int(player_json['headshotKills'])
     user_match.heals = int(player_json['heals'])
     user_match.kill_place = int(player_json['killPlace'])

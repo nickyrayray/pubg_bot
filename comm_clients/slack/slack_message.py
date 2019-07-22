@@ -8,7 +8,8 @@ class SlackMessage(object):
     PREVIEW_TEXT = 'Pubg match completed'
     MATCH_TEXT_TEMPLATE = "*{game_mode}* match completed on *{map_name}* on `{pubg_timestamp}`"
     INDIVIDUAL_TEXT_TEMPLATE = "*{name}* ranked {win_place}, got {kills} kills, {knocks} knocks, {assists} assists, " \
-                               "revived {revives} teammates, and used {heals} healing items. "
+                               "revived {revives} teammates, did {damage} points of damage, " \
+                               "used {boosts} boosts, and used {heals} healing items. "
     KILL_DETAIL_TEMPLATE = 'They got {h_kills} headshot kills. Their longest kill was {kill_meters} meters ' \
                            'away. They killed {team_kills} teammates. Their kill place was {kill_place}. '
     SURVIVE_TEMPLATE = 'They survived {time_survived}, or {survival_percentage:.2f}% of the match.'
@@ -107,13 +108,15 @@ class SlackMessage(object):
         text = self.INDIVIDUAL_TEXT_TEMPLATE.format(
             name=self._get_name_from_match_data(user_data),
             win_place=user_data.win_place,
-            kills=user_data.kills,
+            kills=user_data.kills + user_data.team_kills,
             knocks=user_data.knock_downs,
             assists=user_data.assists,
             revives=user_data.revives,
             heals=user_data.heals,
+            boosts=user_data.boosts,
+            damage=user_data.damage_dealt,
         )
-        if user_data.kills > 0:
+        if user_data.kills + user_data.team_kills > 0:
             text += self.KILL_DETAIL_TEMPLATE.format(
                 h_kills=user_data.headshot_kills,
                 kill_meters=user_data.longest_kill,
