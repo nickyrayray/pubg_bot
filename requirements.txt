@@ -5,7 +5,7 @@ chardet==3.0.4
 click==7.0
 cryptography==2.7
 dj-database-url==0.5.0
-django==2.2.3
+django==2.2.4
 flask==1.1.1
 gunicorn==19.9.0
 idna==2.8
